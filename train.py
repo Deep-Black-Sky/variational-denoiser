@@ -13,7 +13,7 @@ def kl_loss(dummy, concated_param):
     return kl_loss
 
 def denoise_loss(y_true, y_pred):
-    denoise_loss = mse(K.flatten(y_true), K.flatten(y_pred))
+    denoise_loss = mse(y_true, y_pred)
     return denoise_loss
 
 def loss(y_true, y_pred, z_mean, z_log_var):
@@ -29,14 +29,17 @@ def train(iteration, epoch, num_sounds):
 
     vd.compile(optimizer='adam',
                loss=[kl_loss, denoise_loss],
-               loss_weights=[1000.0, 1.0])
+               loss_weights=[1.0, 1.0])
 
     for i in range(iteration):
         ys = data.make_batch(num_sounds)
         ys = np.reshape(ys, (ys.shape[0], 512, 1))
-        xs = data.add_noise(ys, 0.0, 0.1)
+        xs = data.add_noise(ys, 0.0, 0.4)
         dummy = np.zeros(ys.shape[0], dtype=float)
 
         vd.fit(x=xs, y=[dummy, ys],
                epochs=epoch,
                validation_split=0.3)
+
+if __name__ == '__main__':
+    train(50, 5, 1)
