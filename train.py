@@ -29,7 +29,7 @@ def train(iteration, epoch, num_sounds):
 
     vd.compile(optimizer='adam',
                loss=[kl_loss, denoise_loss],
-               loss_weights=[1.0, 1.0])
+               loss_weights=[10.0, 1.0])
 
     for i in range(iteration):
         ys = data.make_batch(num_sounds)
