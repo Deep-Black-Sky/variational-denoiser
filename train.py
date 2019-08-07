@@ -35,7 +35,7 @@ def train(iteration, epoch, num_sounds, is_jupyter):
     for i in range(iteration):
         ys = data.make_batch(num_sounds)
         ys = np.reshape(ys, (ys.shape[0], 512, 1))
-        xs = data.add_noise(ys, 0.0, 0.4)
+        xs = data.add_noise(ys, 0.0, 0.08)
         dummy = np.zeros(ys.shape[0], dtype=float)
 
         vd.fit(x=xs, y=[dummy, ys],
@@ -43,7 +43,11 @@ def train(iteration, epoch, num_sounds, is_jupyter):
                validation_split=0.3)
 
         if is_jupyter:
-            denoised = denoise(vd, xs[0:100])
+            test = data.make_batch(1)
+            IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
+            test = np.reshape(test, (test.shape[0], 512, 1))
+            test = data.add_noise(test, 0.0, 0.08)
+            denoised = denoise(vd, test)
             IPython.display.display(IPython.display.Audio(data=denoised, rate=48000))
 
 def denoise(model, data):
