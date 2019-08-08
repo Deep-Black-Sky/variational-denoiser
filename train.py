@@ -15,7 +15,7 @@ def kl_loss(dummy, concated_param):
 
 def denoise_loss(y_true, y_pred):
     denoise_loss = mse(y_true, y_pred)
-    return denoise_loss * 100.0
+    return denoise_loss
 
 def loss(y_true, y_pred, z_mean, z_log_var):
     kl = kl_loss(z_mean, z_log_var)
@@ -44,12 +44,12 @@ def train(iteration, epoch, num_sounds, is_jupyter):
 
         if is_jupyter:
             test = data.make_batch(1)
-            IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
+            IPython.display.display(IPython.display.Audio(data=data.itransform(test.flatten()), rate=48000))
             test = np.reshape(test, (test.shape[0], 512, 1))
             test = data.add_noise(test, 0.0, 0.08)
-            IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
+            IPython.display.display(IPython.display.Audio(data=data.itransform(test.flatten()), rate=48000))
             denoised = denoise(vd, test)
-            IPython.display.display(IPython.display.Audio(data=denoised, rate=48000))
+            IPython.display.display(IPython.display.Audio(data=data.itransform(denoised), rate=48000))
 
 def denoise(model, data):
     denoised = model.predict(data)
