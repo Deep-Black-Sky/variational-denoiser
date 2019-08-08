@@ -14,8 +14,11 @@ def kl_loss(dummy, concated_param):
     return K.abs(K.mean(kl_loss) * 1000.0)
 
 def denoise_loss(y_true, y_pred):
-    denoise_loss = mse(y_true, y_pred)
-    return denoise_loss * 100.0
+    denoise_loss = tf.divide(
+                    tf.reduce_sum(tf.square(tf.abs(tf.subtract(y_true, y_pred)))),
+                    tf.reduce_sum(tf.square(tf.abs(y_true))))
+    # denoise_loss = mse(y_true, y_pred)
+    return denoise_loss
 
 def loss(y_true, y_pred, z_mean, z_log_var):
     kl = kl_loss(z_mean, z_log_var)
