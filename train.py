@@ -49,7 +49,7 @@ def train(iteration, epoch, num_sounds, is_jupyter):
             test = data.make_batch(1)
             IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
             test = np.reshape(test, (test.shape[0], 512, 1))
-            test = data.add_noise(test, 0.0, 0.08)
+            test, noise = data.add_noise(test, 0.0, 0.08)
             IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
             denoised = denoise(vd, test)
             IPython.display.display(IPython.display.Audio(data=denoised, rate=48000))
