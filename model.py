@@ -52,7 +52,7 @@ class DenoiserModel:
 
         # WaveNet Denoiser
         z = Reshape(target_shape=(input_size, 1))(z)
-        denoiser_input = Concatenate()([input, z])
+        denoiser_input = Add()([input, z])
         out, skip_out = wavenetBlock(64, 2, 2)(denoiser_input)
         skip_connections = [skip_out]
         for i in range(20):
