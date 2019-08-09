@@ -16,7 +16,7 @@ def kl_loss(dummy, concated_param):
 def denoise_loss(ys_xs_noise, y_pred):
     y_true, mixed, noise = tf.split(ys_xs_noise, num_or_size_splits=3, axis=1)
     noise_pred = tf.subtract(mixed, y_pred)
-    denoise_loss = tf.add(tf.abs(tf.subtract(y_true, y_pred)), tf.abs(tf.subtract(noise, noise_pred)))
+    denoise_loss = tf.add(mse(y_true, y_pred), mse(noise, noise_pred))
     return denoise_loss
 
 def loss(y_true, y_pred, z_mean, z_log_var):
