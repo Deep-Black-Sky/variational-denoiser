@@ -11,7 +11,7 @@ def kl_loss(dummy, concated_param):
     kl_loss = 1 + z_log_var - K.square(z_mean) - K.exp(z_log_var)
     kl_loss = K.sum(kl_loss, axis=-1)
     kl_loss *= -0.5
-    return K.abs(K.mean(kl_loss) * 1000.0)
+    return kl_loss * 1000.0
 
 def denoise_loss(ys_xs_noise, y_pred):
     y_true, mixed, noise = tf.split(ys_xs_noise, num_or_size_splits=3, axis=1)

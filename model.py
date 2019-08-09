@@ -42,8 +42,6 @@ class DenoiserModel:
             out, skip_out = wavenetBlock(64, 2, 2**((i+2)%9))(out)
             skip_connections.append(skip_out)
         encoder_net = Add()(skip_connections)
-        encoder_net = Activation('relu')(encoder_net)
-        encoder_net = Convolution1D(1, 1, activation='relu')(encoder_net)
         encoder_net = Convolution1D(1, 1)(encoder_net)
         encoder_net = Flatten()(encoder_net)
         z_mean = Dense(input_size)(encoder_net)
@@ -59,11 +57,10 @@ class DenoiserModel:
             out, skip_out = wavenetBlock(64, 2, 2**((i+2)%9))(out)
             skip_connections.append(skip_out)
         denoiser_net = Add()(skip_connections)
-        denoiser_net = Activation('relu')(denoiser_net)
-        denoiser_net = Convolution1D(1, 1, activation='relu')(denoiser_net)
+        denoiser_net = Convolution1D(1, 1)(denoiser_net)
         denoiser_net = Convolution1D(3, 1)(denoiser_net)
         denoiser_net = Flatten()(denoiser_net)
-        denoiser_net = Dense(input_size, activation='softmax')(denoiser_net)
+        denoiser_net = Dense(input_size, activation='tanh')(denoiser_net)
         denoiser_net = Reshape(target_shape=(input_size, 1), name='denoise')(denoiser_net)
 
         model = Model(inputs=input,
