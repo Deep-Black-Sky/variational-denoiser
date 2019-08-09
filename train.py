@@ -11,11 +11,13 @@ def kl_loss(dummy, concated_param):
     kl_loss = 1 + z_log_var - K.square(z_mean) - K.exp(z_log_var)
     kl_loss = K.sum(kl_loss, axis=-1)
     kl_loss *= -0.5
-    return K.mean(kl_loss) * 1000.0
+    return K.abs(K.mean(kl_loss) * 1000.0)
 
-def denoise_loss(y_true, y_pred):
-    denoise_loss = mse(y_true, y_pred)
-    return denoise_loss * 100.0
+def denoise_loss(ys_xs_noise, y_pred):
+    y_true, mixed, noise = tf.split(ys_xs_noise, num_or_size_splits=3, axis=1)
+    noise_pred = tf.subtract(mixed, y_pred)
+    denoise_loss = tf.add(tf.abs(tf.subtract(y_true, y_pred)), tf.abs(tf.subtract(noise, noise_pred)))
+    return denoise_loss
 
 def loss(y_true, y_pred, z_mean, z_log_var):
     kl = kl_loss(z_mean, z_log_var)
@@ -35,10 +37,11 @@ def train(iteration, epoch, num_sounds, is_jupyter):
     for i in range(iteration):
         ys = data.make_batch(num_sounds)
         ys = np.reshape(ys, (ys.shape[0], 512, 1))
-        xs = data.add_noise(ys, 0.0, 0.08)
-        dummy = np.zeros(ys.shape[0], dtype=float)
+        xs, noise = data.add_noise(ys, 0.0, 0.08)
+        ys_xs_noise = np.concatenate([ys, xs, noise], axis=1)
+        dummy = np.zeros(ys_xs_noise.shape[0], dtype=float)
 
-        vd.fit(x=xs, y=[dummy, ys],
+        vd.fit(x=xs, y=[dummy, ys_xs_noise],
                epochs=epoch,
                validation_split=0.3)
 
@@ -47,6 +50,7 @@ def train(iteration, epoch, num_sounds, is_jupyter):
             IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
             test = np.reshape(test, (test.shape[0], 512, 1))
             test = data.add_noise(test, 0.0, 0.08)
+            IPython.display.display(IPython.display.Audio(data=test.flatten(), rate=48000))
             denoised = denoise(vd, test)
             IPython.display.display(IPython.display.Audio(data=denoised, rate=48000))
 

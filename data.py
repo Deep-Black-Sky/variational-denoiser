@@ -36,4 +36,4 @@ class Data:
 
     def add_noise(self, raw, mean, dev):
         noise = np.random.normal(mean, dev, raw.shape)
-        return np.add(raw, noise)
+        return np.add(raw, noise), noise
