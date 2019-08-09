@@ -63,7 +63,7 @@ class DenoiserModel:
         denoiser_net = Convolution1D(1, 1, activation='relu')(denoiser_net)
         denoiser_net = Convolution1D(3, 1)(denoiser_net)
         denoiser_net = Flatten()(denoiser_net)
-        denoiser_net = Dense(input_size, activation='tanh')(denoiser_net)
+        denoiser_net = Dense(input_size, activation='softmax')(denoiser_net)
         denoiser_net = Reshape(target_shape=(input_size, 1), name='denoise')(denoiser_net)
 
         model = Model(inputs=input,
